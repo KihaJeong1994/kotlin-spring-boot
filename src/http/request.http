@@ -1,0 +1,34 @@
+// https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html
+### Post "Hello!"
+POST {{domain}}/
+Content-Type: application/json
+
+{
+  "text": "Hello!"
+}
+
+### Get all the messages
+GET {{domain}}/
+
+### Get the message by its id
+GET {{domain}}/2253af84-b5c0-45ca-86da-2f806ed60a86
+
+### Login
+POST {{domain}}/login
+Authorization: Basic {{username}} {{password}} // you can send Basic Auth Header like this. Intellij will automatically encode your header
+
+// after login, set global access_token by response
+> {%
+    client.test("Validate", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json'");
+        client.assert(response.body.accessToken.trim().length > 0);
+    });
+
+    client.log(response.body.accessToken);
+    client.global.set("access_token",response.body.accessToken)
+%}
+
+### Test access_token be set by Login
+GET {{domain}}/2253af84-b5c0-45ca-86da-2f806ed60a86
+Authorization: Bearer {{access_token}}
